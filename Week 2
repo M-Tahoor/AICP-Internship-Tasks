@@ -1,0 +1,134 @@
+//Task 1
+# Initialize data structures for storing passenger counts and total revenue
+total_revenue_up = 0
+total_revenue_down = 0
+
+# Set up the train times and initial ticket availability
+train_times_up = ["09:00", "11:00", "13:00", "15:00"]
+train_times_down = ["10:00", "12:00", "14:00", "16:00"]
+passengers_up = [0,0,0,0]
+passengers_down = [0,0,0,0]
+revenue_up = [0,0,0,0]
+revenue_down = [0,0,0,0]
+
+# Initialize the number of tickets available for each train
+tickets_available_up = [80 * 6 for _ in train_times_up]  # 6 coaches with 80 seats each
+tickets_available_down = [80 * 6 for _ in train_times_down]  # 6 coaches with 80 seats each
+
+def display():
+  print("-------------------------------------------------")
+  y = 0
+  for i in range(4):
+    print("Train Time up: ",train_times_up[i])
+    print("Tickets available up: ",tickets_available_up[i])
+    print("Train Time down: ",train_times_down[i])
+    print("Tickets available down: ",tickets_available_down[i])
+    print("-------------------------------------------------")
+  return
+
+
+# Store the initialized data structures for further use in later tasks
+train_details = {
+    "train_times_up": train_times_up,
+    "train_times_down": train_times_down,
+    "total_revenue_up": total_revenue_up,
+    "total_revenue_down": total_revenue_down,
+}
+display()
+
+
+
+//Task 2
+
+import math  # Needed for calculating group discounts
+
+def purchase_tickets(train_details):
+    # Check which train journey the passenger wants to book tickets for
+    train_journey_up = input("Select train journey up (09:00, 11:00, 13:00, 15:00): ")
+    train_journey_down = input("Select train journey down (10:00, 12:00, 14:00, 16:00): ")
+
+    # Check if the specified train journeys exist
+    if train_journey_up not in train_details["train_times_up"] or train_journey_down not in train_details["train_times_down"]:
+        print("Invalid train journey selection. Please choose from the available options.")
+        return
+
+    if train_journey_up > train_journey_down:
+      print("Invalid Train Times down, ")
+      return
+    # Get the number of tickets to be purchased
+    num_tickets = int(input("Number of tickets: "))
+
+    # Check if the required number of tickets is available for both train journeys
+    if num_tickets > tickets_available_up[train_times_up.index(train_journey_up)]:
+        print("Insufficient tickets available for the selected train journey up.")
+        return
+
+    if num_tickets > tickets_available_down[train_times_down.index(train_journey_down)]:
+        print("Insufficient tickets available for the selected train journey down.")
+        return
+
+    # Calculate the total price before applying group discounts
+    total_price = num_tickets * 50  # $25 for up and $25 for down
+
+    # Apply group discount if applicable
+    if 10 <= num_tickets <= 80:
+        discount_factor = math.floor(num_tickets / 10)
+        discount_amount = discount_factor * 50
+        total_price -= discount_amount
+
+    # Update the number of tickets available for the selected train journeys
+    t = train_times_up.index(train_journey_up)
+    tickets_available_up[train_times_up.index(train_journey_up)] -= num_tickets
+    tickets_available_down[train_times_down.index(train_journey_down)] -= num_tickets
+    passengers_up[t] += num_tickets
+    passengers_down[t] += num_tickets
+
+
+    # Update the total revenue for the selected train journeys
+    train_details["total_revenue_up"] += total_price / 2  # Split the total price between up and down journeys
+    train_details["total_revenue_down"] += total_price / 2
+    revenue_up[t] += total_price / 2
+    revenue_down[t] += total_price / 2
+
+    # Display updated ticket availability and total revenue
+    print("\nUpdated train times and ticket availability:")
+    print("Train Times Up:", train_times_up)
+    print("Tickets Available Up:", tickets_available_up)
+    print("\nTrain Times Down:", train_times_down)
+    print("Tickets Available Down:", tickets_available_down)
+
+    print("\nUpdated total revenue:")
+    print("Total Revenue Up:", train_details["total_revenue_up"])
+    print("Total Revenue Down:", train_details["total_revenue_down"])
+
+    print("\nTickets purchased successfully!")
+    return
+loop = True
+while (loop):
+  print('[1]---[Details]\n[2]---[Booking]\n[3]---[Exit]\n')
+  i = int(input('Enter:'))
+  if i == 1:
+    display()
+  elif i == 2:
+    purchase_tickets(train_details)
+    for i in tickets_available_up:
+        if i == 0:
+          loop = False
+        else:
+          loop = True
+  elif i == 3:
+    break
+
+
+//Task 3
+
+print("No. of passengers traveled in each train up: ",passengers_up)
+print("No. of passengers traveled in each train down: ",passengers_down)
+print("Revenue per train going up: ",revenue_up)
+print("Revenue per train going down: ",revenue_down)
+print("Total passengers going up",sum(passengers_up))
+print("Total passengers going down",sum(passengers_down))
+print("Total Revenue Up:", train_details["total_revenue_up"])
+print("Total Revenue Down:", train_details["total_revenue_down"])
+print("Highest no. of passengers went up through tain: ",train_times_up[passengers_up.index(max(passengers_up))])
+print("Highest no. of passengers went down through tain: ",train_times_down[passengers_down.index(max(passengers_down))])
